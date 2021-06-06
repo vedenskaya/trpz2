@@ -1,0 +1,16 @@
+{
+  "name": "web01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fancyapps/fancybox": "^3.5.7",
+    "bootstrap": "^5.0.0-beta2",
+    "jquery": "^3.5.1"
+  }
+}
