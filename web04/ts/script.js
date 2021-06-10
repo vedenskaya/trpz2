@@ -236,13 +236,14 @@ var CPU;
 ;
 var Computer = /** @class */ (function (_super) {
     __extends(Computer, _super);
-    function Computer(id, name, price, description, inStock, list) {
+    function Computer(id, name, price, description, inStock, isDrive, list) {
         var _this = _super.call(this, id, name, price, description, inStock) || this;
         _this.id = id;
         _this.name = name;
         _this.price = price;
         _this.description = description;
         _this.inStock = inStock;
+        _this.isDrive = isDrive;
         _this.list = list;
         _this.CalculateFlags();
         _this.Init();
@@ -271,20 +272,22 @@ var Computer = /** @class */ (function (_super) {
             p.innerHTML = "Есть процессоры: " + str;
             obj.firstChild.firstChild.insertBefore(p, obj.firstChild.firstChild.childNodes[2]);
         }
-        // if (this.isRedComp) {
-        //   let p = document.createElement("p");
-        //   p.setAttribute("class", "card-text text-info m-0");
-        //   p.innerHTML = "Красные компы";
-        //   obj.firstChild.firstChild.insertBefore(p, obj.firstChild.firstChild.childNodes[2]);
-        // }
-        if (document.getElementById('isRedComp') == null) {
+        //Если наушники беспроводные, то добавляем информацию об этом в карточку
+        if (this.isDrive) {
+            var p = document.createElement("p");
+            p.setAttribute("class", "card-text text-info m-0");
+            p.innerHTML = "Беспроводные";
+            obj.firstChild.firstChild.insertBefore(p, obj.firstChild.firstChild.childNodes[2]);
+        }
+        //Если эти конкретные наушники беспроводные и нет чекбокса группировки, то добавляем его
+        if (document.getElementById('isDrive') == null && this.isDrive != null && this.isDrive) {
             var inp = document.createElement("input");
             inp.setAttribute("type", "checkbox");
-            inp.setAttribute("id", "isRedComp");
-            inp.setAttribute("onclick", "CheckRedComp(this.checked)");
+            inp.setAttribute("id", "isDrive");
+            inp.setAttribute("onclick", "CheckDrive(this.checked)");
             var lab = document.createElement("p");
             lab.appendChild(inp);
-            lab.innerHTML += "Только красный комп<br>";
+            lab.innerHTML += "Только с дисководом<br>";
             var div = document.getElementById('myTools');
             div.appendChild(lab);
         }
@@ -306,15 +309,12 @@ var Computer = /** @class */ (function (_super) {
     };
     return Computer;
 }(Product));
-function CheckRedComp(flag) {
+function CheckDrive(flag) {
     document.getElementById('rowts').innerHTML = "";
     if (flag) {
-        for (var i = 0; i < this.productList.length; i++) {
-            if (productList[i] instanceof Computer)
-                for (var j = 0; productList[i].list.length; j++)
-                    if (productList[i].list[j].color == Color.Red)
-                        productList[i].Init();
-        }
+        for (var i = 0; i < this.productList.length; i++)
+            if (productList[i] instanceof Computer && productList[i].isDrive)
+                productList[i].Init();
     }
     else {
         for (var i = 0; i < this.productList.length; i++)
@@ -324,13 +324,14 @@ function CheckRedComp(flag) {
 // Outerwear
 var Outerwear = /** @class */ (function (_super) {
     __extends(Outerwear, _super);
-    function Outerwear(id, name, price, description, inStock, list) {
+    function Outerwear(id, name, price, description, inStock, isColor, list) {
         var _this = _super.call(this, id, name, price, description, inStock) || this;
         _this.id = id;
         _this.name = name;
         _this.price = price;
         _this.description = description;
         _this.inStock = inStock;
+        _this.isColor = isColor;
         _this.list = list;
         _this.CalculateFlags();
         _this.Init();
@@ -359,6 +360,25 @@ var Outerwear = /** @class */ (function (_super) {
             p.innerHTML = "Есть размеры: " + str;
             obj.firstChild.firstChild.insertBefore(p, obj.firstChild.firstChild.childNodes[2]);
         }
+        //Если наушники беспроводные, то добавляем информацию об этом в карточку
+        if (this.isColor) {
+            var p = document.createElement("p");
+            p.setAttribute("class", "card-text text-info m-0");
+            p.innerHTML = "Беспроводные";
+            obj.firstChild.firstChild.insertBefore(p, obj.firstChild.firstChild.childNodes[2]);
+        }
+        //Если эти конкретные наушники беспроводные и нет чекбокса группировки, то добавляем его
+        if (document.getElementById('isColor') == null && this.isColor != null && this.isColor) {
+            var inp = document.createElement("input");
+            inp.setAttribute("type", "checkbox");
+            inp.setAttribute("id", "isColor");
+            inp.setAttribute("onclick", "CheckColor(this.checked)");
+            var lab = document.createElement("p");
+            lab.appendChild(inp);
+            lab.innerHTML += "Только цветная одежда<br>";
+            var div = document.getElementById('myTools');
+            div.appendChild(lab);
+        }
         this.Embed(obj);
     };
     //Вычисление сложных особенностей
@@ -377,6 +397,18 @@ var Outerwear = /** @class */ (function (_super) {
     };
     return Outerwear;
 }(Product));
+function CheckColor(flag) {
+    document.getElementById('rowts').innerHTML = "";
+    if (flag) {
+        for (var i = 0; i < this.productList.length; i++)
+            if (productList[i] instanceof Outerwear && productList[i].isColor)
+                productList[i].Init();
+    }
+    else {
+        for (var i = 0; i < this.productList.length; i++)
+            productList[i].Init();
+    }
+}
 var Basket = /** @class */ (function () {
     function Basket() {
         this.list = []; //Список товаров в корзине
@@ -395,7 +427,16 @@ var Basket = /** @class */ (function () {
         else {
             document.getElementById('modlalMessag').innerHTML = "";
             productList[val].inStock -= num;
-            this.list[this.list.length] = { id: val, quantity: num };
+            var f = true;
+            for (var i = 0; i < this.list.length; i++) {
+                if (this.list[i].id === val) {
+                    this.list[i].quantity += num;
+                    f = false;
+                    break;
+                }
+            }
+            if (f)
+                this.list[this.list.length] = { id: val, quantity: num };
             this.CalculateBasket();
             return true;
         }
@@ -405,7 +446,8 @@ var Basket = /** @class */ (function () {
         if (this.list.length > 0) {
             var id = void 0;
             var total = 0;
-            var message = "В даннвй момент в корзине:<br>";
+            var message = "В данный момент в корзине:<br>";
+            this.list.sort(function (a, b) { return a.id - b.id; });
             for (var i = 0; i < this.list.length; i++) {
                 message += productList[this.list[i].id].name + " - " + this.list[i].quantity + "<br>";
                 total += productList[this.list[i].id].price * this.list[i].quantity;
@@ -425,6 +467,7 @@ function myByBtn(val) {
 }
 //Действие на кнопке "купить"
 function WantBuy(val) {
+    document.getElementById('productCount').innerHTML = productList[val].inStock;
     document.getElementById('modlalBtn').setAttribute("value", val);
 }
 //Инициализация корзины
@@ -450,22 +493,22 @@ var productList = [
         { dimension: 43, color: Color.Pink, quantity: 1 }
     ]),
     new Balalaika(8, "Балалайка2", 217, "Обычная балалайка белорусской фирмы Змрочныя мелодыі.", 1),
-    new Computer(9, "Комп'ютер1", 10525, "Средний комп. от фирмы Леново", 2, [
+    new Computer(9, "Комп'ютер1", 10525, "Средний комп. от фирмы Леново", 2, true, [
         { color: Color.Black, cpu: CPU.I3 },
         { color: Color.Gray, cpu: CPU.Amd },
     ]),
-    new Computer(10, "Комп'ютер2", 17365, "Выше среднего комп. от фирмы Асус", 5, [
+    new Computer(10, "Комп'ютер2", 17365, "Выше среднего комп. от фирмы Асус", 5, false, [
         { color: Color.Black, cpu: CPU.I7 },
         { color: Color.Blue, cpu: CPU.I7 },
         { color: Color.Blue, cpu: CPU.I5 },
         { color: Color.Red, cpu: CPU.Amd },
         { color: Color.Black, cpu: CPU.Amd },
     ]),
-    new Outerwear(11, "Одежда1", 500, "Шуба", 2, [
+    new Outerwear(11, "Одежда1", 500, "Шуба", 2, false, [
         { color: Color.Black, dimension: 44 },
         { color: Color.Gray, dimension: 45 }
     ]),
-    new Outerwear(12, "Одежда2", 40, "Штаны", 3, [
+    new Outerwear(12, "Одежда2", 40, "Штаны", 3, true, [
         { color: Color.Black, dimension: 39 },
         { color: Color.Red, dimension: 44 },
         { color: Color.Blue, dimension: 44 },
