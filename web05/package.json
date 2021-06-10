@@ -25,6 +25,12 @@
     "grunt-svgmin": "^6.0.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
-    "gulp-uglify": "^3.0.2"
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-jshint": "^2.1.0",
+    "gulp-svgmin": "^3.0.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp.spritesmith": "^6.12.1",
+    "jshint": "^2.13.0"
   }
 }
